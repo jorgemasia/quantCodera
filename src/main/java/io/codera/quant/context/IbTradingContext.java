@@ -8,7 +8,12 @@ import com.ib.client.OrderStatus;
 import com.ib.client.OrderType;
 import com.ib.client.TickType;
 import com.ib.client.Types;
+import com.ib.client.Types.BarSize;
+import com.ib.client.Types.DurationUnit;
+import com.ib.client.Types.WhatToShow;
 import com.ib.controller.ApiController;
+import com.ib.controller.ApiController.IHistoricalDataHandler;
+
 import io.codera.quant.config.ContractBuilder;
 import io.codera.quant.exception.NoOrderAvailable;
 import io.codera.quant.exception.PriceNotAvailableException;
@@ -263,8 +268,10 @@ public class IbTradingContext implements TradingContext {
 
     Contract contract = contractBuilder.build(symbol);
     HistoryObserver historyObserver = new IbHistoryObserver(symbol);
+    
     controller.reqHistoricalData(contract, date, daysOfHistory, Types.DurationUnit.DAY,
-        Types.BarSize._1_min, Types.WhatToShow.TRADES, false, historyObserver);
+        Types.BarSize._1_min, Types.WhatToShow.TRADES, false, false, historyObserver);
+
     return ((IbHistoryObserver)historyObserver).observableDoubleSeries()
         .toBlocking()
         .first();
@@ -279,8 +286,9 @@ public class IbTradingContext implements TradingContext {
 
     Contract contract = contractBuilder.build(symbol);
     HistoryObserver historyObserver = new IbHistoryObserver(symbol);
-    controller.reqHistoricalData(contract, date, numberOfMinutes * 60, Types.DurationUnit.SECOND,
-        Types.BarSize._1_min, Types.WhatToShow.TRADES, false, historyObserver);
+    int seconds = (numberOfMinutes * 60);
+    controller.reqHistoricalData(contract, date, seconds, Types.DurationUnit.SECOND,
+        Types.BarSize._1_min, Types.WhatToShow.TRADES, false, false, historyObserver);
 
     DoubleSeries history = ((IbHistoryObserver) historyObserver).observableDoubleSeries()
         .toBlocking()
@@ -288,7 +296,7 @@ public class IbTradingContext implements TradingContext {
     // We might need to pull history for last day if time of request is after market is closed
     if(history.size() == 0 || history.size() < numberOfMinutes) {
       controller.reqHistoricalData(contract, date, 1, Types.DurationUnit.DAY,
-          Types.BarSize._1_min, Types.WhatToShow.TRADES, false, historyObserver);
+          Types.BarSize._1_min, Types.WhatToShow.TRADES, false, false, historyObserver);
 
       history = ((IbHistoryObserver) historyObserver).observableDoubleSeries()
           .toBlocking()

@@ -3,6 +3,8 @@ package io.codera.quant.config;
 import com.google.common.collect.Lists;
 import com.ib.controller.ApiController.IConnectionHandler;
 import java.util.ArrayList;
+import java.util.List;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -25,7 +27,7 @@ public class IbConnectionHandler implements IConnectionHandler {
   }
 
   @Override
-  public void accountList(ArrayList<String> list) {
+  public void accountList(List<String> list) {
     show("Received account list");
     accountList.clear();
     accountList.addAll(list);
@@ -38,7 +40,7 @@ public class IbConnectionHandler implements IConnectionHandler {
   }
 
   @Override
-  public void message(int id, int errorCode, String errorMsg) {
+  public void message(int id, long errorTime, int errorCode, String errorMsg, String advancedOrderRejectJson) {
     logger.info("Message id: {}, errorCode: {}, errorMsg: {}", id, errorCode, errorMsg);
   }
 

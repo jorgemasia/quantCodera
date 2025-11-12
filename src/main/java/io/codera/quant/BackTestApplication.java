@@ -37,7 +37,7 @@ public class BackTestApplication {
 
     ApiController controller =
         new ApiController(new IbConnectionHandler(), valueOf -> {}, valueOf -> {});
-    controller.connect(DEFAULT_HOST, DEFAULT_IB_PORT, DEFAULT_CLIENT_ID, null);
+    controller.connect(DEFAULT_HOST, DEFAULT_IB_PORT, DEFAULT_CLIENT_ID, "+PACEAPI");
 
     List<String> contracts = ImmutableList.of("SPY", "VOO");
 
